@@ -32,7 +32,7 @@ def get_google_service_sheet(service_account_json:str) -> Any:
     return sheets_service
 
 def get_google_sheet_as_pd_df(google_sheet_id: str,sheets_service: Any, renamed_columns:Dict[str,str],sheet_name: str) -> pd.DataFrame:
-    RANGE = f"{sheet_name}A:Z"
+    RANGE = f"{sheet_name}!A:Z"
     result = sheets_service.spreadsheets().values().get(
     spreadsheetId=google_sheet_id,
     range=RANGE
