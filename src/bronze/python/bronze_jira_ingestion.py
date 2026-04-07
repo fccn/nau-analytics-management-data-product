@@ -39,7 +39,6 @@ def get_google_sheet_as_pd_df(google_sheet_id: str,sheets_service: Any, renamed_
     ).execute()
     values = result.get("values", [])
     df = pd.DataFrame(values[1:], columns=values[0])
-    df = df[df['From (Lisbon time)'] != ""]
     df = df.rename(columns=renamed_columns) #type: ignore
     return df
 
