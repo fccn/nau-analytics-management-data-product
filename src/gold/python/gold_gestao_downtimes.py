@@ -63,27 +63,6 @@ def main():
     #Load source dataframe
     src_table = spark.sql(f"SELECT * FROM {src_layer}.{pipeline}.{tgt_table_name}")
 
-    src_table = src_table.withColumn(
-        "seconds",
-        F.expr("""
-            int(split(duration, ':')[0]) * 3600 +
-            int(split(duration, ':')[1]) * 60 +
-            int(split(duration, ':')[2])
-        """)
-    )
-    src_table = with_time_interval(src_table, "from_lisbon_time", "to_lisbon_time")
-    src_table = src_table.withColumn("day_key", F.to_date(F.col("from_lisbon_time")))
-    src_table = src_table.withColumn("is_financial_manager", F.expr("""
-    CASE
-        WHEN LOWER(affected_applications) = 'lms, studio, ecommerce' THEN true
-        WHEN LOWER(affected_applications) = 'lms, studio, fiancial manager' THEN true
-        ELSE false
-    END
-    """))
-    src_table = src_table.withColumnRenamed("lms_nau_edu_pt_and_studio_nau_edu_pt", "is_lms_affected")
-    src_table = src_table.withColumnRenamed("www_nau_edu_pt", "is_mkt_site_affected")
-    src_table = src_table.withColumn("duration_seconds", F.expr("COALESCE(seconds, interval_seconds)"))
-
     df_src_data = src_table.select(
         "day_key",
         "from_lisbon_time",
