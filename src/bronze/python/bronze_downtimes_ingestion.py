@@ -67,7 +67,8 @@ def get_max_timestamp_for_table(spark_session: SparkSession, table_name:str,env:
     try:
         START_DATE = spark_session.sql(f"SELECT NVL(max(last_execution_ts),'1900-01-01 00:00:00') as ts FROM bronze{env}.audit.pipeline_run_ctrl WHERE table_name = '{table_name}' and pipeline = 'gestao'").first()["ts"]
     except Exception:
-        raise ValueError("last execution ts not found on table")
+        logging.warning(f"audit.pipeline_run_ctrl not found or inaccessible for env '{env}'. Defaulting start date to 1900-01-01.")
+        START_DATE = '1900-01-01 00:00:00'
     return START_DATE
 
 def update_ctrl_table(spark_session: SparkSession, table_name:str,current_timestamp: str ,number_of_records:int,env:str) -> bool:
@@ -151,12 +152,11 @@ def main():
 
     current_timestamp = spark.sql("SELECT current_timestamp() as c").first()["c"]
     start_date = get_max_timestamp_for_table(spark, tgt_table_name, ENVIRONMENT)
-    unfiltered_df = df
     df = df.filter(f"from_lisbon_time >= '{start_date}'")
     df = add_ingestion_metadata_column(df, tgt_table_name, current_timestamp)
     df.write.format("iceberg").mode("append").saveAsTable(f"{tgt_layer}.{tgt_pipeline}.{tgt_table_name}")
 
-    nr = validate_ingestion_values(spark_session=spark,src_table_df=unfiltered_df,table_name=tgt_table_name,env=ENVIRONMENT)
+    nr = validate_ingestion_values(spark_session=spark, src_table_df=df, table_name=tgt_table_name, env=ENVIRONMENT)
 
     result = update_ctrl_table(spark_session=spark,table_name=tgt_table_name,current_timestamp=current_timestamp,env=ENVIRONMENT,number_of_records=nr)
     if not result:
