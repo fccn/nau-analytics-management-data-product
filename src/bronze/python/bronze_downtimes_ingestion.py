@@ -62,9 +62,7 @@ def create_spark_df_from_pandas_df(spark: SparkSession , pd_df: pd.DataFrame) ->
         .withColumn("affected_applications", F.col("affected_applications").cast(StringType())) \
         .withColumn("lms_nau_edu_pt_and_studio_nau_edu_pt", F.col("lms_nau_edu_pt_and_studio_nau_edu_pt").cast(BooleanType())) \
         .withColumn("www_nau_edu_pt", F.col("www_nau_edu_pt").cast(BooleanType())) \
-        .withColumn("only_some_sub_service_affected", F.col("only_some_sub_service_affected").cast(BooleanType())) \
-        .withColumn("ingestion_date", F.col("ingestion_date").cast(TimestampType())) \
-        .withColumn("source_name", F.col("source_name").cast(StringType()))
+        .withColumn("only_some_sub_service_affected", F.col("only_some_sub_service_affected").cast(BooleanType()))
     return spark_df
 
 def get_max_timestamp_for_table(spark_session: SparkSession, table_name:str,env:str) -> str:
