@@ -138,7 +138,7 @@ def main():
     start_date = get_max_timestamp_for_table(spark,tgt_table_name, ENVIRONMENT)
     unfiltered_df = df
     df = df.filter(f"from_lisbon_time >= {start_date}")
-    df = add_ingestion_metadata_column(spark,df,current_timestamp)
+    df = add_ingestion_metadata_column(df, tgt_table_name, current_timestamp)
     df.write.format("iceberg").mode("append").saveAsTable(f"{tgt_layer}.{tgt_pipeline}.{tgt_table_name}")
     
     nr = validate_ingestion_values(spark_session=spark,src_table_df=unfiltered_df,table_name=tgt_table_name,env=ENVIRONMENT)
