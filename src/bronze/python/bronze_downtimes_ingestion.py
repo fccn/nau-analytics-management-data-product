@@ -24,6 +24,9 @@ def get_google_service_sheet(service_account_json:str) -> Any:
         "https://www.googleapis.com/auth/spreadsheets.readonly"
     ]
     SERVICE_ACCOUNT_INFO = json.loads(service_account_json)
+    logging.info(f"Service account info keys: {list(SERVICE_ACCOUNT_INFO.keys())}")
+    if 'private_key' not in SERVICE_ACCOUNT_INFO:
+        raise ValueError("The service account JSON is missing the 'private_key' field. Please ensure you are using a valid service account key JSON file.")
     credentials = service_account.Credentials.from_service_account_info(
         SERVICE_ACCOUNT_INFO,
         scopes=SCOPES
