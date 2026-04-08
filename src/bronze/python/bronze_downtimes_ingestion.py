@@ -71,14 +71,15 @@ def get_max_timestamp_for_table(spark_session: SparkSession, table_name:str,env:
         START_DATE = '1900-01-01 00:00:00'
     return START_DATE
 
-def update_ctrl_table(spark_session: SparkSession, table_name:str,current_timestamp: str ,number_of_records:int,env:str) -> bool:
+def update_ctrl_table(spark_session: SparkSession, table_name:str, current_timestamp: str ,number_of_records:int,env:str) -> bool:
     try:
         spark_session.sql(f"""
             INSERT INTO bronze{env}.audit.pipeline_run_ctrl
             VALUES('gestao', '{table_name}', '{current_timestamp}', {number_of_records})
             """)
         return True 
-    except Exception:
+    except Exception as e:
+        logging.error(f"Failed to update control table for table '{table_name}' in env '{env}'.", exc_info=e)
         return False
 
 def add_ingestion_metadata_column(df: DataFrame,table: str,current_timestamp:str) -> DataFrame:
