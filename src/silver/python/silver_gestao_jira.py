@@ -107,7 +107,7 @@ def main():
     src_table_NSU = src_table_NSU.withColumn("ticket_type_origin",F.expr("UPPER(TRIM(LEFT(key ,3)))"))
     src_table_NSN = src_table_NSN.withColumn("ticket_type_origin",F.expr("UPPER(TRIM(LEFT(key ,3)))"))
     src_table_NSC = src_table_NSC.withColumn("ticket_type_origin",F.expr("UPPER(TRIM(LEFT(key ,3)))"))
-    src_table_NSC = src_table_NSC.withColumn("resolution",F.lit(None))
+    src_table_NSC = src_table_NSC.withColumn("resolution",F.lit("None"))
     src_table_NSC = src_table_NSC = src_table_NSC.withColumn(
         "resolved",
         F.expr("""
