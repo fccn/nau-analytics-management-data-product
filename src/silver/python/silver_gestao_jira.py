@@ -1,6 +1,7 @@
 from pyspark.sql import DataFrame #type:ignore
 import pyspark.sql.functions as F #type:ignore
 from pyspark.sql.functions import col #type:ignore 
+from pyspark.sql.types import StringType #type:ignore
 from nau_analytics_data_product_utils_lib import start_iceberg_session,get_required_env #type: ignore
 import logging
 
@@ -119,6 +120,11 @@ def main():
     src_table_NSU = src_table_NSU.select("ticket_type_origin","key","assignee","reporter","status","created","resolution","resolved","satisfaction","time_to_resolve","time_to_resolve_seconds")
     src_table_NSN = src_table_NSN.select("ticket_type_origin","key","assignee","reporter","status","created","resolution","resolved","satisfaction","time_to_resolve","time_to_resolve_seconds")
     src_table_NSC = src_table_NSC.select("ticket_type_origin","key","assignee","reporter","status","created","resolution","resolved","satisfaction","time_to_resolve","time_to_resolve_seconds")
+    
+    src_table_NSU = src_table_NSU.withColumn("time_to_resolve", F.col("time_to_resolve").cast(StringType()))
+    src_table_NSN = src_table_NSN.withColumn("time_to_resolve", F.col("time_to_resolve").cast(StringType()))
+    src_table_NSC = src_table_NSC.withColumn("time_to_resolve", F.col("time_to_resolve").cast(StringType()))
+    
     src_table_NSU.write.format("iceberg").mode("overwrite").saveAsTable(f"{tgt_layer}.{pipeline}.NSU")
     src_table_NSN.write.format("iceberg").mode("overwrite").saveAsTable(f"{tgt_layer}.{pipeline}.NSN")
     src_table_NSC.write.format("iceberg").mode("overwrite").saveAsTable(f"{tgt_layer}.{pipeline}.NSC")
