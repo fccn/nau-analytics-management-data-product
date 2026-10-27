@@ -206,7 +206,7 @@ def main():
         "Team": "team",
         "Created": "created",
         "Updated": "updated",
-        "Status Category": "status_category",
+        "Status category": "status_category",
         "Satisfaction": "satisfaction",
         "Time to first response": "time_to_first_response",
         "Time to resolution": "time_to_resolution",
